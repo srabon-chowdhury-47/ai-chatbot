@@ -1,245 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Gemini Chatbot</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f0f2f5;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-    .chat-container {
-      background-color: #ffffff;
-      border-radius: 1rem;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 600px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      min-height: 500px;
-      max-height: 90vh;
-    }
-    .chat-header {
-      background-color: #c12828;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-      font-size: 1.25rem;
-      font-weight: bold;
-      border-top-left-radius: 1rem;
-      border-top-right-radius: 1rem;
-    }
-    .chat-messages {
-      flex-grow: 1;
-      padding: 1.5rem;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      scroll-behavior: smooth;
-    }
-    .message {
-      max-width: 80%;
-      padding: 0.75rem 1rem;
-      border-radius: 0.75rem;
-      word-wrap: break-word;
-      white-space: pre-wrap;
-      line-height: 1.5;
-    }
-    .message.user {
-      background-color: #e0e7ff;
-      align-self: flex-end;
-      color: #312e81;
-    }
-    .message.bot {
-      background-color: #f3f4f6;
-      align-self: flex-start;
-      color: #1f2937;
-    }
-    .chat-input-area {
-      display: flex;
-      padding: 1rem;
-      border-top: 1px solid #e5e7eb;
-      background-color: #ffffff;
-    }
-    .chat-input {
-      flex-grow: 1;
-      padding: 0.75rem 1rem;
-      border: 1px solid #d1d5db;
-      border-radius: 0.75rem;
-      outline: none;
-      resize: none;
-      min-height: 40px;
-      max-height: 120px;
-      overflow-y: auto;
-    }
-    .chat-send-button {
-      background-color: #4f46e5;
-      color: white;
-      padding: 0.75rem 1.25rem;
-      border-radius: 0.75rem;
-      margin-left: 0.75rem;
-      cursor: pointer;
-      transition: background-color 0.2s ease-in-out;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      border: none;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-    .chat-send-button:hover {
-      background-color: #4338ca;
-    }
-    .loading-spinner {
-      border: 4px solid rgba(0, 0, 0, 0.1);
-      border-left-color: #4f46e5;
-      border-radius: 50%;
-      width: 24px;
-      height: 24px;
-      animation: spin 1s linear infinite;
-      display: none;
-      margin-left: 0.75rem;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-  </style>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
-  <div class="chat-container">
-    <div class="chat-header">Srabon's Chatbot</div>
-    <div class="chat-messages" id="chat-messages">
-      <div class="message bot">Hello! I'm your AI-powered chatbot. How can I help you today?</div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Srabon's Chatbot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              inter: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-gray-100 font-inter flex items-center justify-center min-h-screen p-2">
+    <div
+      class="w-full max-w-2xl h-[90vh] bg-white rounded-2xl shadow-xl flex flex-col overflow-hidden"
+    >
+      <!-- Header -->
+      <div class="bg-indigo-600 text-white py-4 px-6 text-center text-lg font-semibold">
+        Srabon's Chatbot
+      </div>
+
+      <!-- Messages Area -->
+      <div
+        id="chat-messages"
+        class="flex-1 overflow-y-auto px-4 py-6 space-y-4 bg-gray-50"
+      >
+        <div class="max-w-[80%] p-3 rounded-xl bg-gray-200 text-gray-800">
+          Hello! I'm your AI-powered chatbot. How can I help you today?
+        </div>
+      </div>
+
+      <!-- Input Area -->
+      <div class="border-t border-gray-200 px-4 py-3 bg-white flex items-center">
+        <textarea
+          id="chat-input"
+          rows="1"
+          class="flex-grow resize-none border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          placeholder="Type your message..."
+        ></textarea>
+        <button
+          id="send-button"
+          class="ml-2 bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-indigo-700 transition"
+        >
+          Send
+        </button>
+        <div
+          id="loading-spinner"
+          class="ml-2 hidden w-5 h-5 border-4 border-gray-300 border-l-indigo-600 rounded-full animate-spin"
+        ></div>
+      </div>
     </div>
-    <div class="chat-input-area">
-      <textarea id="chat-input" class="chat-input" placeholder="Type your message..."></textarea>
-      <button id="send-button" class="chat-send-button">Send</button>
-      <div id="loading-spinner" class="loading-spinner"></div>
-    </div>
-  </div>
 
-  <script>
-    const API_KEY = 'AIzaSyBHpyf7WrtCY6maOy1C1mlhudnfQjhgBd8';
-    const MODEL_NAME = 'gemini-2.5-flash-preview-05-20';
+    <!-- Scripts -->
+    <script>
+      const API_KEY = 'AIzaSyBHpyf7WrtCY6maOy1C1mlhudnfQjhgBd8';
+      const MODEL_NAME = 'gemini-2.5-flash-preview-05-20';
 
-    const chatMessages = document.getElementById('chat-messages');
-    const chatInput = document.getElementById('chat-input');
-    const sendButton = document.getElementById('send-button');
-    const loadingSpinner = document.getElementById('loading-spinner');
+      const chatMessages = document.getElementById("chat-messages");
+      const chatInput = document.getElementById("chat-input");
+      const sendButton = document.getElementById("send-button");
+      const loadingSpinner = document.getElementById("loading-spinner");
 
-    let chatHistory = [];
+      let chatHistory = [];
 
-    function formatMessage(text) {
-      // Replace bold **text**
-      text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      function formatMessage(text) {
+        text = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 
-      // Convert * bullet lines into list items
-      const lines = text.split('\n');
-      const formattedLines = [];
-      let insideList = false;
+        const lines = text.split("\n");
+        const formattedLines = [];
+        let insideList = false;
 
-      for (let line of lines) {
-        const trimmed = line.trim();
-        if (trimmed.startsWith('* ')) {
-          if (!insideList) {
-            formattedLines.push('<ul style="padding-left: 1rem; list-style-type: disc;">');
-            insideList = true;
+        for (let line of lines) {
+          const trimmed = line.trim();
+          if (trimmed.startsWith("* ")) {
+            if (!insideList) {
+              formattedLines.push('<ul class="list-disc pl-6">');
+              insideList = true;
+            }
+            formattedLines.push(`<li>${trimmed.slice(2)}</li>`);
+          } else {
+            if (insideList) {
+              formattedLines.push("</ul>");
+              insideList = false;
+            }
+            formattedLines.push(`<p>${line}</p>`);
           }
-          const item = trimmed.slice(2);
-          formattedLines.push(`<li>${item}</li>`);
-        } else {
-          if (insideList) {
-            formattedLines.push('</ul>');
-            insideList = false;
-          }
-          formattedLines.push(`<p>${line}</p>`);
         }
+
+        if (insideList) {
+          formattedLines.push("</ul>");
+        }
+
+        return formattedLines.join("");
       }
 
-      if (insideList) {
-        formattedLines.push('</ul>');
+      function displayMessage(text, sender = "bot") {
+        const wrapper = document.createElement("div");
+        wrapper.className = `max-w-[80%] p-3 rounded-xl ${
+          sender === "user"
+            ? "bg-indigo-100 text-indigo-900 self-end ml-auto"
+            : "bg-gray-200 text-gray-800"
+        }`;
+        wrapper.innerHTML = formatMessage(text);
+        chatMessages.appendChild(wrapper);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
       }
 
-      return formattedLines.join('');
-    }
+      async function callGeminiAPI(prompt) {
+        loadingSpinner.classList.remove("hidden");
+        sendButton.disabled = true;
 
-    function displayMessage(text, sender) {
-      const messageElement = document.createElement('div');
-      messageElement.classList.add('message', sender);
-      messageElement.innerHTML = formatMessage(text);
-      chatMessages.appendChild(messageElement);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
+        chatHistory.push({ role: "user", parts: [{ text: prompt }] });
 
-    async function callGeminiAPI(prompt) {
-      loadingSpinner.style.display = 'block';
-      sendButton.disabled = true;
-      chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+        const payload = { contents: chatHistory };
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${API_KEY}`;
 
-      const payload = { contents: chatHistory };
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${API_KEY}`;
+        try {
+          const response = await fetch(apiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
 
-      try {
-        const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-
-        const result = await response.json();
-        const botText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (botText) {
-          displayMessage(botText, 'bot');
+          const result = await response.json();
+          const botText =
+            result?.candidates?.[0]?.content?.parts?.[0]?.text || "No response from Gemini.";
+          displayMessage(botText, "bot");
           chatHistory.push({ role: "model", parts: [{ text: botText }] });
-        } else {
-          displayMessage('No response from Gemini.', 'bot');
+        } catch (error) {
+          displayMessage("❌ Failed to connect to the chatbot.", "bot");
         }
 
-      } catch (error) {
-        displayMessage('Failed to connect to the chatbot.', 'bot');
+        loadingSpinner.classList.add("hidden");
+        sendButton.disabled = false;
+        chatInput.focus();
       }
 
-      loadingSpinner.style.display = 'none';
-      sendButton.disabled = false;
-      chatInput.focus();
-    }
+      sendButton.addEventListener("click", () => {
+        const message = chatInput.value.trim();
+        if (message) {
+          displayMessage(message, "user");
+          chatInput.value = "";
+          callGeminiAPI(message);
+        }
+      });
 
-    sendButton.addEventListener('click', () => {
-      const message = chatInput.value.trim();
-      if (message) {
-        displayMessage(message, 'user');
-        chatInput.value = '';
-        callGeminiAPI(message);
-      }
-    });
+      chatInput.addEventListener("keypress", (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          sendButton.click();
+        }
+      });
 
-    chatInput.addEventListener('keypress', (event) => {
-      if (event.key === 'Enter' && !event.shiftKey) {
-        event.preventDefault();
-        sendButton.click();
-      }
-    });
+      chatInput.addEventListener("input", () => {
+        chatInput.style.height = "auto";
+        chatInput.style.height = chatInput.scrollHeight + "px";
+      });
 
-    chatInput.addEventListener('input', () => {
-      chatInput.style.height = 'auto';
-      chatInput.style.height = chatInput.scrollHeight + 'px';
-    });
-
-    window.onload = () => chatInput.focus();
-  </script>
-</body>
+      window.onload = () => chatInput.focus();
+    </script>
+  </body>
 </html>
-
